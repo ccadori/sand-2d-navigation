@@ -1,0 +1,17 @@
+{
+  "name": "com.ccadori.sand2dnavigation",
+  "version": "0.2.1",
+  "displayName": "Sand 2D Navigation",
+  "unity": "2019.3",
+  "keywords": [
+    "unity",
+    "navigation",
+    "grid",
+    "2d"
+  ],
+  "author": {
+    "name": "CCadori",
+    "email": "carloscadori.dev@gmail.com",
+    "url": "https://github.com.br/ccadori"
+  }
+}
