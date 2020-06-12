@@ -9,7 +9,7 @@ namespace Sand.Navigation
     {
         public NavigationGrid grid;
         public float velocity;
-        
+
         [HideInInspector]
         public NavigationNode currentNode;
         [HideInInspector]
@@ -47,12 +47,8 @@ namespace Sand.Navigation
 
         public void MoveTo(NavigationNode target)
         {
-            Debug.Log("1");
-
-            if (target == null || currentNode == null)
+            if (target == null || currentNode == null || target == currentNode)
                 return;
-
-            Debug.Log("2");
 
             var path = Math.Getpath(currentNode, target, this);
 
@@ -69,46 +65,33 @@ namespace Sand.Navigation
 
         internal IEnumerator WalkRoutine(List<NavigationNode> path)
         {
-            Debug.Log("Starting moving");
             moving = true;
+            movingToNode = path[0];
 
-            while (true)
+            while (path.Count > 0 && true)
             {
                 yield return new WaitForFixedUpdate();
 
                 if (movingToNode != null && (Vector2)transform.position != (Vector2)movingToNode.transform.position)
                 {
-                    Debug.Log("Moving");
                     transform.position = Vector2.MoveTowards(transform.position, movingToNode.transform.position, (velocity / 100));
                 }
                 else
                 {
-                    if (path != null && path.Count > 0)
+                    if (path[0] == movingToNode)
                     {
-                        if (path[0] == movingToNode)
-                        {
-                            path.RemoveAt(0);
-                        }
-
-                        if (path.Count > 0)
-                        {
-                            Debug.Log("Setting moving node");
-                            currentNode = movingToNode;
-                            movingToNode = path[0];
-                        }
-                        else
-                        {
-                            break;
-                        }
+                        path.RemoveAt(0);
                     }
-                    else
+
+                    if (path.Count > 0)
                     {
-                        break;
+                        currentNode = path[0];
+                        movingToNode = path[0];
                     }
                 }
             }
 
-            Debug.Log("Finishing moving");
+            movingToNode = null;
             moving = false;
         }
     }

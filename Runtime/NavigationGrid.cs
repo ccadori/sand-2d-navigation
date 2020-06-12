@@ -78,8 +78,6 @@ namespace Sand.Navigation
         {
             if (!setupDone) Setup();
 
-            Debug.Log(GetIndex(position));
-
             return GetNode(GetIndex(position));
         }
 
@@ -129,8 +127,6 @@ namespace Sand.Navigation
 
             var index = Math.CalculateIndexFromPosition(nodeSize, node.transform.position);
             node.index = index;
-
-            Debug.Log(index);
 
             if (nodes.ContainsKey(node.index))
             {
