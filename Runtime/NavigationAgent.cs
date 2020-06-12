@@ -39,13 +39,13 @@ namespace Sand.Navigation
             this.grid = grid;
         }
 
-        public void DefineInitialNode()
+        public virtual void DefineInitialNode()
         {
             currentNode = grid.GetClosestNode(transform.position);
             transform.position = currentNode.transform.position;
         }
 
-        public void MoveTo(NavigationNode target)
+        public virtual void MoveTo(NavigationNode target)
         {
             if (target == null || currentNode == null || target == currentNode)
                 return;
@@ -58,12 +58,12 @@ namespace Sand.Navigation
             walkRoutine = StartCoroutine(WalkRoutine(path));
         }
 
-        public void MoveTo(Vector2 position)
+        public virtual void MoveTo(Vector2 position)
         {
             MoveTo(grid.GetNode(position));
         }
 
-        internal IEnumerator WalkRoutine(List<NavigationNode> path)
+        protected virtual IEnumerator WalkRoutine(List<NavigationNode> path)
         {
             moving = true;
 
