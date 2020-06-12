@@ -55,7 +55,7 @@ namespace Sand.Navigation
             if (walkRoutine != null)
                 StopCoroutine(walkRoutine);
 
-            StartCoroutine(WalkRoutine(path));
+            walkRoutine = StartCoroutine(WalkRoutine(path));
         }
 
         public void MoveTo(Vector2 position)
