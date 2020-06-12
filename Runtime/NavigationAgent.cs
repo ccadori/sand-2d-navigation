@@ -50,7 +50,7 @@ namespace Sand.Navigation
             if (target == null || currentNode == null || target == currentNode)
                 return;
 
-            var path = Math.Getpath(currentNode, target, this);
+            var path = grid.GetPath(currentNode, target, this);
 
             if (walkRoutine != null)
                 StopCoroutine(walkRoutine);
@@ -66,9 +66,8 @@ namespace Sand.Navigation
         internal IEnumerator WalkRoutine(List<NavigationNode> path)
         {
             moving = true;
-            movingToNode = path[0];
 
-            while (path.Count > 0 && true)
+            while (path != null && path.Count > 0 && true)
             {
                 yield return new WaitForFixedUpdate();
 

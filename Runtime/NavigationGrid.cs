@@ -1,4 +1,5 @@
 ﻿using Sand.Navigation.Utils;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -8,8 +9,14 @@ namespace Sand.Navigation
     {
         public Vector2 nodeSize;
         public bool allowDiagonalMove;
-        
+        public bool limitAgentsPerNode;
+        public int agentsPerNode;
+
+        [HideInInspector]
+        public List<NavigationAgent> agents;
+        [HideInInspector]
         public Dictionary<Int2, NavigationNode> nodes;
+        
         private float lastCacheUpdate;
         private bool setupDone;
 
@@ -37,7 +44,13 @@ namespace Sand.Navigation
             foreach (NavigationAgent agent in agents)
             {
                 agent.SetGrid(this);
+                AddAgent(agent);
             }
+        }
+
+        public List<NavigationNode> GetPath(NavigationNode start, NavigationNode target, NavigationAgent agent) 
+        {
+            return Utils.Math.GetPath(start, target, this);
         }
 
         public NavigationNode GetClosestNode(Vector2 point)
@@ -61,7 +74,7 @@ namespace Sand.Navigation
 
         public Int2 GetIndex(Vector2 position)
         {
-            return Math.CalculateIndexFromPosition(nodeSize, position);
+            return Utils.Math.CalculateIndexFromPosition(nodeSize, position);
         }
 
         public NavigationNode GetNode(Int2 index)
@@ -116,6 +129,14 @@ namespace Sand.Navigation
             return ( neighbors, Time.deltaTime );
         }
 
+        internal bool IsNodeOccupied(NavigationNode node)
+        {
+            if (!limitAgentsPerNode)
+                return false;
+
+            return GetAgentsInsideNodeCount(node) >= agentsPerNode;
+        }
+
         public void UpdateCache()
         {
             lastCacheUpdate = Time.deltaTime;
@@ -125,7 +146,7 @@ namespace Sand.Navigation
         {
             if (nodes == null) nodes = new Dictionary<Int2, NavigationNode>();
 
-            var index = Math.CalculateIndexFromPosition(nodeSize, node.transform.position);
+            var index = Utils.Math.CalculateIndexFromPosition(nodeSize, node.transform.position);
             node.index = index;
 
             if (nodes.ContainsKey(node.index))
@@ -147,6 +168,29 @@ namespace Sand.Navigation
             nodes.Remove(node.index);
 
             UpdateCache();
+        }
+
+        public void AddAgent(NavigationAgent agent) 
+        {
+            agents.Add(agent);
+        }
+
+        public void RemoveAgent(NavigationAgent agent)
+        {
+            agents.Remove(agent);
+        }
+
+        public int GetAgentsInsideNodeCount(NavigationNode node)
+        {
+            int count = 0;
+
+            foreach (NavigationAgent agent in agents)
+            {
+                if (agent.currentNode == node)
+                    count++;
+            }
+
+            return count;
         }
     }
 }
