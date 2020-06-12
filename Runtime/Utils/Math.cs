@@ -100,7 +100,7 @@ namespace Sand.Navigation.Utils
                     if (closedSet.Contains(neighbor))
                         continue;
 
-                    float costToNeighbour = currentNode.gcost + Vector2.Distance(currentNode.transform.position, neighbor.transform.position);
+                    float costToNeighbour = currentNode.gcost + neighbor.moveCost + Vector2.Distance(currentNode.transform.position, neighbor.transform.position);
 
                     if (costToNeighbour < neighbor.gcost || !openSet.Contains(neighbor))
                     {
