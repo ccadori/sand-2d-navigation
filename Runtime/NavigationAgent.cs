@@ -16,25 +16,34 @@ namespace Sand.Navigation
         public NavigationNode movingToNode;
         [HideInInspector]
         public bool moving;
-
+        
+        protected new bool enabled;
         protected Coroutine walkRoutine;
 
-        private void OnEnable()
+        private void Start()
         {
+            Enable();
+        }
+
+        public virtual void Enable()
+        {
+            grid.AddAgent(this);
             DefineInitialNode();
         }
 
-        private void OnDisable()
+        public virtual void Disable()
         {
             if (walkRoutine != null)
             {
                 StopCoroutine(walkRoutine);
-                moving = false;
-                movingToNode = null;
             }
+
+            grid.RemoveAgent(this);
+            moving = false;
+            movingToNode = null;
         }
 
-        public void SetGrid(NavigationGrid grid)
+        public virtual void SetGrid(NavigationGrid grid)
         {
             this.grid = grid;
         }

@@ -31,20 +31,6 @@ namespace Sand.Navigation
             this.grid = grid;
         }
 
-        protected void OnEnable()
-        {
-            if (grid == null) return;
-
-            grid.AddNode(this);
-        }
-
-        protected void OnDisable()
-        {
-            if (grid == null) return;
-
-            grid.RemoveNode(this);
-        }
-
         public List<NavigationNode> GetNeighbors() 
         {
             var result = grid.GetNeighbors(this, lastNeighborUpdate);

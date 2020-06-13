@@ -38,14 +38,6 @@ namespace Sand.Navigation
                 node.SetGrid(this);
                 AddNode(node);
             }
-            
-            var agents = GetComponentsInChildren<NavigationAgent>();
-
-            foreach (NavigationAgent agent in agents)
-            {
-                agent.SetGrid(this);
-                AddAgent(agent);
-            }
         }
 
         public List<NavigationNode> GetPath(NavigationNode start, NavigationNode target, NavigationAgent agent) 
@@ -172,6 +164,9 @@ namespace Sand.Navigation
 
         public void AddAgent(NavigationAgent agent) 
         {
+            if (agents.Find((a) => agent == a) != null) 
+                return; 
+
             agents.Add(agent);
         }
 
