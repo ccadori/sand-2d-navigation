@@ -21,6 +21,26 @@
             return new Int2(a.x + b.x, a.y + b.y);
         }
 
+        public static bool operator ==(Int2 a, Int2 b)
+        {
+            return a.x == b.x && a.y == b.y;
+        }
+
+        public static bool operator !=(Int2 a, Int2 b)
+        {
+            return a.x != b.x || a.y != b.y;
+        }
+
+        public override bool Equals(object obj)
+        {
+            return (Int2)obj != null && this == (Int2)obj;
+        }
+
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
+        }
+
         public override string ToString()
         {
             return string.Format("({0}, {1})", x, y);
