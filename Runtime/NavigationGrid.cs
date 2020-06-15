@@ -161,7 +161,7 @@ namespace Sand.Navigation
 
             foreach (NavigationAgent agent in Agents)
             {
-                if (agent.currentNode == node)
+                if (agent.CurrentNode == node)
                     count++;
             }
 

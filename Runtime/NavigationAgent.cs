@@ -1,29 +1,26 @@
-﻿using Sand.Navigation.Utils;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace Sand.Navigation
+
 {
     public class NavigationAgent : MonoBehaviour
     {
         public NavigationGrid grid;
         public float velocity;
 
-        [HideInInspector]
-        public NavigationNode currentNode;
-        [HideInInspector]
-        public NavigationNode movingToNode;
-        [HideInInspector]
-        public bool moving;
-        
-        protected new bool enabled;
         protected Coroutine walkRoutine;
+
+        public NavigationNode CurrentNode { get; set; }
+        public NavigationNode MovingToNode { get; set; }
+        public bool Moving { get; set; }
+        protected bool Enabled { get; set; }
 
         private void Start()
         {
             grid.AddAgent(this);
-            DefineInitialNode();
+            Teleport(grid.GetClosestNode(transform.position));
         }
 
         public virtual void Disable()
@@ -34,22 +31,22 @@ namespace Sand.Navigation
             }
 
             grid.RemoveAgent(this);
-            moving = false;
-            movingToNode = null;
+            Moving = false;
+            MovingToNode = null;
         }
 
-        public virtual void DefineInitialNode()
+        public virtual void Teleport(NavigationNode node)
         {
-            currentNode = grid.GetClosestNode(transform.position);
-            transform.position = currentNode.transform.position;
+            CurrentNode = node;
+            transform.position = CurrentNode.transform.position;
         }
 
         public virtual void MoveTo(NavigationNode target)
         {
-            if (target == null || currentNode == null || target == currentNode)
+            if (target == null || CurrentNode == null || target == CurrentNode)
                 return;
 
-            var path = grid.GetPath(currentNode, target, this);
+            var path = grid.GetPath(CurrentNode, target, this);
             
             if (walkRoutine != null)
                 StopCoroutine(walkRoutine);
@@ -64,33 +61,33 @@ namespace Sand.Navigation
 
         protected virtual IEnumerator WalkRoutine(List<NavigationNode> path)
         {
-            moving = true;
+            Moving = true;
 
             while (path != null && path.Count > 0 && true)
             {
                 yield return new WaitForFixedUpdate();
 
-                if (movingToNode != null && (Vector2)transform.position != (Vector2)movingToNode.transform.position)
+                if (MovingToNode != null && (Vector2)transform.position != (Vector2)MovingToNode.transform.position)
                 {
-                    transform.position = Vector2.MoveTowards(transform.position, movingToNode.transform.position, (velocity / 100));
+                    transform.position = Vector2.MoveTowards(transform.position, MovingToNode.transform.position, (velocity / 100));
                 }
                 else
                 {
-                    if (path[0] == movingToNode)
+                    if (path[0] == MovingToNode)
                     {
                         path.RemoveAt(0);
                     }
 
                     if (path.Count > 0)
                     {
-                        currentNode = path[0];
-                        movingToNode = path[0];
+                        CurrentNode = path[0];
+                        MovingToNode = path[0];
                     }
                 }
             }
 
-            movingToNode = null;
-            moving = false;
+            MovingToNode = null;
+            Moving = false;
         }
     }
 }
