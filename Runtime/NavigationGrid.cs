@@ -12,32 +12,16 @@ namespace Sand.Navigation
         public bool limitAgentsPerNode;
         public int agentsPerNode;
 
-        [HideInInspector]
-        public List<NavigationAgent> agents;
-        [HideInInspector]
-        public Dictionary<Int2, NavigationNode> nodes;
+        public List<NavigationAgent> Agents { get; set; }
+        public Dictionary<Int2, NavigationNode> Nodes { get; set; }
         
         private float lastCacheUpdate;
-        private bool setupDone;
 
         public void Awake()
         {
-            Setup();
-        }
-
-        protected void Setup()
-        {
-            if (setupDone) return;
-            
-            setupDone = true;
-            
-            var childrenNodes = GetComponentsInChildren<NavigationNode>();
-            
-            foreach(NavigationNode node in childrenNodes)
-            {
-                node.SetGrid(this);
-                AddNode(node);
-            }
+            Agents = new List<NavigationAgent>();
+            Nodes = new Dictionary<Int2, NavigationNode>();
+            lastCacheUpdate = 0;
         }
 
         public List<NavigationNode> GetPath(NavigationNode start, NavigationNode target, NavigationAgent agent) 
@@ -47,12 +31,10 @@ namespace Sand.Navigation
 
         public NavigationNode GetClosestNode(Vector2 point)
         {
-            if (!setupDone) Setup();
-
             NavigationNode closestNode = null;
             float distance = Mathf.Infinity;
 
-            foreach (KeyValuePair<Int2, NavigationNode> node in nodes)
+            foreach (KeyValuePair<Int2, NavigationNode> node in Nodes)
             {
                 if (distance > Vector2.Distance(node.Value.transform.position, point))
                 {
@@ -71,34 +53,30 @@ namespace Sand.Navigation
 
         public NavigationNode GetNode(Int2 index)
         {
-            if (!setupDone) Setup();
-
-            if (nodes.ContainsKey(index))
-                return nodes[index];
+            if (Nodes.ContainsKey(index))
+                return Nodes[index];
             else
                 return null;
         }
 
         public NavigationNode GetNode(Vector2 position)
         {
-            if (!setupDone) Setup();
-
             return GetNode(GetIndex(position));
         }
 
-        public (List<NavigationNode> neighbors, float cache) GetNeighbors(NavigationNode root, float lastUpdate)
+        public List<NavigationNode> GetNeighbors(NavigationNode root)
         {
-            if (lastUpdate > lastCacheUpdate)
+            if (root.LastNeighborUpdate > lastCacheUpdate)
             {
-                return (root.cachedNeighbors, Time.deltaTime);
+                return root.CachedNeighbors;
             }
 
             List<NavigationNode> neighbors = new List<NavigationNode>();
 
-            var left = GetNode(new Int2(root.index.x - 1, root.index.y));
-            var right = GetNode(new Int2(root.index.x + 1, root.index.y));
-            var top = GetNode(new Int2(root.index.x, root.index.y + 1));
-            var bottom = GetNode(new Int2(root.index.x, root.index.y - 1));
+            var left = GetNode(new Int2(root.Index.x - 1, root.Index.y));
+            var right = GetNode(new Int2(root.Index.x + 1, root.Index.y));
+            var top = GetNode(new Int2(root.Index.x, root.Index.y + 1));
+            var bottom = GetNode(new Int2(root.Index.x, root.Index.y - 1));
 
             if (left != null) neighbors.Add(left);
             if (right != null) neighbors.Add(right);
@@ -107,18 +85,20 @@ namespace Sand.Navigation
 
             if (allowDiagonalMove)
             {
-                var topLeft = GetNode(new Int2(root.index.x - 1, root.index.y + 1));
-                var topRight = GetNode(new Int2(root.index.x + 1, root.index.y + 1));
-                var bottomLeft = GetNode(new Int2(root.index.x - 1, root.index.y - 1));
-                var bottomRight = GetNode(new Int2(root.index.x + 1, root.index.y - 1));
+                var topLeft = GetNode(new Int2(root.Index.x - 1, root.Index.y + 1));
+                var topRight = GetNode(new Int2(root.Index.x + 1, root.Index.y + 1));
+                var bottomLeft = GetNode(new Int2(root.Index.x - 1, root.Index.y - 1));
+                var bottomRight = GetNode(new Int2(root.Index.x + 1, root.Index.y - 1));
 
                 if (topLeft != null) neighbors.Add(topLeft);
                 if (topRight != null) neighbors.Add(topRight);
                 if (bottomLeft != null) neighbors.Add(bottomLeft);
                 if (bottomRight != null) neighbors.Add(bottomRight);
             }
-
-            return ( neighbors, Time.deltaTime );
+            
+            root.CachedNeighbors = neighbors;
+            root.LastNeighborUpdate = Time.deltaTime;
+            return neighbors;
         }
 
         internal bool IsNodeOccupied(NavigationNode node)
@@ -136,18 +116,18 @@ namespace Sand.Navigation
 
         public void AddNode(NavigationNode node)
         {
-            if (nodes == null) nodes = new Dictionary<Int2, NavigationNode>();
+            if (Nodes == null) Nodes = new Dictionary<Int2, NavigationNode>();
 
             var index = Utils.Math.CalculateIndexFromPosition(nodeSize, node.transform.position);
-            node.index = index;
+            node.Index = index;
 
-            if (nodes.ContainsKey(node.index))
+            if (Nodes.ContainsKey(node.Index))
             {
-                nodes[node.index] = node;
+                Nodes[node.Index] = node;
             }
             else
             {
-                nodes.Add(node.index, node);
+                Nodes.Add(node.Index, node);
             }
 
             UpdateCache();
@@ -155,31 +135,31 @@ namespace Sand.Navigation
 
         public void RemoveNode(NavigationNode node)
         {
-            if (nodes == null) nodes = new Dictionary<Int2, NavigationNode>();
+            if (Nodes == null) Nodes = new Dictionary<Int2, NavigationNode>();
 
-            nodes.Remove(node.index);
+            Nodes.Remove(node.Index);
 
             UpdateCache();
         }
 
         public void AddAgent(NavigationAgent agent) 
         {
-            if (agents.Find((a) => agent == a) != null) 
+            if (Agents.Find((a) => agent == a) != null) 
                 return; 
 
-            agents.Add(agent);
+            Agents.Add(agent);
         }
 
         public void RemoveAgent(NavigationAgent agent)
         {
-            agents.Remove(agent);
+            Agents.Remove(agent);
         }
 
         public int GetAgentsInsideNodeCount(NavigationNode node)
         {
             int count = 0;
 
-            foreach (NavigationAgent agent in agents)
+            foreach (NavigationAgent agent in Agents)
             {
                 if (agent.currentNode == node)
                     count++;

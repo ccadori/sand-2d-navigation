@@ -6,39 +6,32 @@ namespace Sand.Navigation
 {
     public class NavigationNode : MonoBehaviour
     {
-        public NavigationGrid grid;
-        public int moveCost;
-        public bool walkable;
+        [SerializeField]
+        private NavigationGrid grid;
+        [SerializeField]
+        private int moveCost;
+        [SerializeField]
+        private bool walkable;
 
-        [HideInInspector]
-        public float gcost;
-        [HideInInspector]
-        public float hcost;
-        [HideInInspector]
-        public NavigationNode parentNodeInPath;
+        public Int2 Index { get; set; }
+        public NavigationGrid Grid { get { return grid; } private set { grid = value; } }
+        public int MoveCost { get { return moveCost; } set { moveCost = value; } }
+        public bool Walkable { get { return walkable; } set { walkable = value; } }
+        public float GCost { get; set; }
+        public float HCost { get; set; }
+        public float FCost { get { return HCost + GCost; } }
+        public NavigationNode ParentNodeInPath { get; set; }
+        public List<NavigationNode> CachedNeighbors { get; set; }
+        public float LastNeighborUpdate { get; set; }
 
-        [HideInInspector]
-        public Int2 index;
-        [HideInInspector]
-        public List<NavigationNode> cachedNeighbors;
-        [HideInInspector]
-        public float lastNeighborUpdate;
-
-        public float FCost { get { return hcost + gcost; } }
-
-        public void SetGrid(NavigationGrid grid)
+        private void Awake()
         {
-            this.grid = grid;
+            Index = grid.GetIndex(transform.position);
         }
 
-        public List<NavigationNode> GetNeighbors() 
+        private void Start()
         {
-            var result = grid.GetNeighbors(this, lastNeighborUpdate);
-            
-            lastNeighborUpdate = result.cache;
-            cachedNeighbors = result.neighbors;
-
-            return cachedNeighbors;
+            Grid.AddNode(this);
         }
     }
 }

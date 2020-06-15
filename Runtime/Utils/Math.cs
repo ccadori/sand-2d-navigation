@@ -40,7 +40,7 @@ namespace Sand.Navigation.Utils
                     continue;
                 }
                  
-                Int2 result = ((path[i].index - path[i + 1].index) + (path[i].index - path[i - 1].index));
+                Int2 result = ((path[i].Index - path[i + 1].Index) + (path[i].Index - path[i - 1].Index));
 
                 if (!(result.x == 0) || !(result.y == 0))
                 {
@@ -75,7 +75,7 @@ namespace Sand.Navigation.Utils
                 {
                     if (openSet[count].FCost < currentNode.FCost ||
                         openSet[count].FCost == currentNode.FCost &&
-                        openSet[count].hcost < currentNode.hcost)
+                        openSet[count].HCost < currentNode.HCost)
                     {
                         currentNode = openSet[count];
                     }
@@ -89,9 +89,9 @@ namespace Sand.Navigation.Utils
                     return TracePath(start, target);
                 }
 
-                foreach (NavigationNode neighbor in currentNode.GetNeighbors())
+                foreach (NavigationNode neighbor in grid.GetNeighbors(currentNode))
                 {
-                    if (!neighbor.walkable)
+                    if (!neighbor.Walkable)
                         continue;
 
                     if (neighbor == null)
@@ -103,20 +103,20 @@ namespace Sand.Navigation.Utils
                     if (grid.IsNodeOccupied(neighbor))
                         continue;
 
-                    float costToNeighbour = currentNode.gcost + neighbor.moveCost + Vector2.Distance(currentNode.transform.position, neighbor.transform.position);
+                    float costToNeighbour = currentNode.GCost + neighbor.MoveCost + Vector2.Distance(currentNode.transform.position, neighbor.transform.position);
 
-                    if (costToNeighbour < neighbor.gcost || !openSet.Contains(neighbor))
+                    if (costToNeighbour < neighbor.GCost || !openSet.Contains(neighbor))
                     {
-                        neighbor.gcost = costToNeighbour;
-                        neighbor.hcost = Vector2.Distance(currentNode.transform.position, neighbor.transform.position);
-                        neighbor.parentNodeInPath = currentNode;
+                        neighbor.GCost = costToNeighbour;
+                        neighbor.HCost = Vector2.Distance(currentNode.transform.position, neighbor.transform.position);
+                        neighbor.ParentNodeInPath = currentNode;
 
                         if (!openSet.Contains(neighbor))
                             openSet.Add(neighbor);
                     }
                 }
             }
-
+            
             return null;
         }
         
@@ -128,7 +128,7 @@ namespace Sand.Navigation.Utils
             while (currentNode != start)
             {
                 path.Add(currentNode);
-                currentNode = currentNode.parentNodeInPath;
+                currentNode = currentNode.ParentNodeInPath;
             }
 
             path.Add(start);

@@ -22,11 +22,6 @@ namespace Sand.Navigation
 
         private void Start()
         {
-            Enable();
-        }
-
-        public virtual void Enable()
-        {
             grid.AddAgent(this);
             DefineInitialNode();
         }
@@ -43,11 +38,6 @@ namespace Sand.Navigation
             movingToNode = null;
         }
 
-        public virtual void SetGrid(NavigationGrid grid)
-        {
-            this.grid = grid;
-        }
-
         public virtual void DefineInitialNode()
         {
             currentNode = grid.GetClosestNode(transform.position);
@@ -60,7 +50,7 @@ namespace Sand.Navigation
                 return;
 
             var path = grid.GetPath(currentNode, target, this);
-
+            
             if (walkRoutine != null)
                 StopCoroutine(walkRoutine);
 
