@@ -7,11 +7,11 @@ namespace Sand.Navigation
     public class NavigationNode : MonoBehaviour
     {
         [SerializeField]
-        private NavigationGrid grid;
+        protected NavigationGrid grid;
         [SerializeField]
-        private int moveCost;
+        protected int moveCost;
         [SerializeField]
-        private bool walkable;
+        protected bool walkable;
 
         public Int2 Index { get; set; }
         public NavigationGrid Grid { get { return grid; } private set { grid = value; } }
@@ -24,12 +24,12 @@ namespace Sand.Navigation
         public List<NavigationNode> CachedNeighbors { get; set; }
         public float LastNeighborUpdate { get; set; }
 
-        private void Awake()
+        protected virtual void Awake()
         {
             Index = grid.GetIndex(transform.position);
         }
 
-        private void Start()
+        protected virtual void Start()
         {
             Grid.AddNode(this);
         }

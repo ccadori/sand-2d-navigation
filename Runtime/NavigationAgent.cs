@@ -9,11 +9,15 @@ namespace Sand.Navigation
     {
         public NavigationGrid grid;
         public float velocity;
+        public float timeBetweenPathUpdates;
+        public int maxAttemptsToUpdatePath;
 
         protected Coroutine walkRoutine;
 
         public NavigationNode CurrentNode { get; set; }
-        public NavigationNode MovingToNode { get; set; }
+        public NavigationNode OccupiedNode;
+
+        public float Velocity { get { return velocity; } set { velocity = value; } }
         public bool Moving { get; set; }
         protected bool Enabled { get; set; }
 
@@ -32,11 +36,17 @@ namespace Sand.Navigation
 
             grid.RemoveAgent(this);
             Moving = false;
-            MovingToNode = null;
+            CurrentNode = null;
         }
 
         public virtual void Teleport(NavigationNode node)
         {
+            if (!grid.CanOccupy(node, this))
+            {
+                return;
+            }
+
+            OccupiedNode = node;
             CurrentNode = node;
             transform.position = CurrentNode.transform.position;
         }
@@ -63,30 +73,42 @@ namespace Sand.Navigation
         {
             Moving = true;
 
-            while (path != null && path.Count > 0 && true)
+            if (path != null && path.Count > 0)
+            {
+                OccupiedNode = path[path.Count - 1];
+            }
+
+            while (path != null && path.Count > 0)
             {
                 yield return new WaitForFixedUpdate();
 
-                if (MovingToNode != null && (Vector2)transform.position != (Vector2)MovingToNode.transform.position)
+                if (CurrentNode != null && (Vector2)transform.position != (Vector2)CurrentNode.transform.position)
                 {
-                    transform.position = Vector2.MoveTowards(transform.position, MovingToNode.transform.position, (velocity / 100));
+                    transform.position = Vector2.MoveTowards(transform.position, CurrentNode.transform.position, (Velocity / 100));
                 }
                 else
                 {
-                    if (path[0] == MovingToNode)
+                    if (path[0] == CurrentNode)
                     {
                         path.RemoveAt(0);
                     }
 
                     if (path.Count > 0)
                     {
-                        CurrentNode = path[0];
-                        MovingToNode = path[0];
+                        if (grid.CanWalkThrough(path[0], this))
+                        {
+                            CurrentNode = path[0];
+                        }
+                        else
+                        {
+                            yield return new WaitForSeconds(timeBetweenPathUpdates);
+
+                            path = grid.GetPath(CurrentNode, path[path.Count - 1], this);
+                        }
                     }
                 }
             }
 
-            MovingToNode = null;
             Moving = false;
         }
     }

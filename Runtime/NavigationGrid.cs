@@ -9,6 +9,8 @@ namespace Sand.Navigation
     {
         public Vector2 nodeSize;
         public bool allowDiagonalMove;
+        public bool limitAgentsWalkingPerNode;
+        public int agentsWalkingPerNode;
         public bool limitAgentsPerNode;
         public int agentsPerNode;
 
@@ -26,7 +28,12 @@ namespace Sand.Navigation
 
         public List<NavigationNode> GetPath(NavigationNode start, NavigationNode target, NavigationAgent agent) 
         {
-            return Utils.Math.GetPath(start, target, this);
+            if (!CanOccupy(target, agent))
+            {
+                return null;
+            }
+
+            return Utils.Math.GetPath(start, target, agent, this);
         }
 
         public NavigationNode GetClosestNode(Vector2 point)
@@ -101,12 +108,24 @@ namespace Sand.Navigation
             return neighbors;
         }
 
-        internal bool IsNodeOccupied(NavigationNode node)
+        internal bool CanOccupy(NavigationNode node, NavigationAgent agent)
         {
-            if (!limitAgentsPerNode)
-                return false;
+            if (limitAgentsPerNode)
+            {
+                return GetAgentsOccupyingNode(node, agent) < agentsPerNode;
+            }
 
-            return GetAgentsInsideNodeCount(node) >= agentsPerNode;
+            return true;
+        }
+
+        internal bool CanWalkThrough(NavigationNode node, NavigationAgent agent)
+        {
+            if (limitAgentsWalkingPerNode)
+            {
+                return GetAgentsWalkingOnNode(node, agent) < agentsWalkingPerNode;
+            }
+            
+            return true;
         }
 
         public void UpdateCache()
@@ -155,14 +174,31 @@ namespace Sand.Navigation
             Agents.Remove(agent);
         }
 
-        public int GetAgentsInsideNodeCount(NavigationNode node)
+        public int GetAgentsOccupyingNode(NavigationNode node, NavigationAgent agent)
         {
             int count = 0;
 
-            foreach (NavigationAgent agent in Agents)
+            foreach (NavigationAgent a in Agents)
             {
-                if (agent.CurrentNode == node)
+                if (a != agent && a.OccupiedNode == node)
+                {
                     count++;
+                }
+            }
+
+            return count;
+        }
+
+        public int GetAgentsWalkingOnNode(NavigationNode node, NavigationAgent agent)
+        {
+            int count = 0;
+
+            foreach (NavigationAgent a in Agents)
+            {
+                if (a != agent && a.CurrentNode == node)
+                {
+                    count++;
+                }
             }
 
             return count;

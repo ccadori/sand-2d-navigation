@@ -59,7 +59,7 @@ namespace Sand.Navigation.Utils
             );
         }
         
-        static public List<NavigationNode> GetPath(NavigationNode start, NavigationNode target, NavigationGrid grid)
+        static public List<NavigationNode> GetPath(NavigationNode start, NavigationNode target, NavigationAgent agent, NavigationGrid grid)
         {
             List<NavigationNode> openSet = new List<NavigationNode>();
             HashSet<NavigationNode> closedSet = new HashSet<NavigationNode>();
@@ -100,7 +100,7 @@ namespace Sand.Navigation.Utils
                     if (closedSet.Contains(neighbor))
                         continue;
 
-                    if (grid.IsNodeOccupied(neighbor))
+                    if (!grid.CanWalkThrough(neighbor, agent))
                         continue;
 
                     float costToNeighbour = currentNode.GCost + neighbor.MoveCost + Vector2.Distance(currentNode.transform.position, neighbor.transform.position);
