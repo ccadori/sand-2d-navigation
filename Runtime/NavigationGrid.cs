@@ -9,8 +9,8 @@ namespace Sand.Navigation
     {
         public Vector2 nodeSize;
         public bool allowDiagonalMove;
-        public bool limitAgentsWalkingPerNode;
-        public int agentsWalkingPerNode;
+        // public bool limitAgentsWalkingPerNode;
+        // public int agentsWalkingPerNode;
         public bool limitAgentsPerNode;
         public int agentsPerNode;
 
@@ -120,10 +120,10 @@ namespace Sand.Navigation
 
         internal bool CanWalkThrough(NavigationNode node, NavigationAgent agent)
         {
-            if (limitAgentsWalkingPerNode)
-            {
-                return GetAgentsWalkingOnNode(node, agent) < agentsWalkingPerNode;
-            }
+            // if (limitAgentsWalkingPerNode)
+            // {
+            //     return GetAgentsWalkingOnNode(node, agent) < agentsWalkingPerNode;
+            // }
             
             return true;
         }

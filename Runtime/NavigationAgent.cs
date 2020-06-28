@@ -9,13 +9,13 @@ namespace Sand.Navigation
     {
         public NavigationGrid grid;
         public float velocity;
-        public float timeBetweenPathUpdates;
-        public int maxAttemptsToUpdatePath;
+        // public float timeBetweenPathUpdates;
+        // public int maxAttemptsToUpdatePath;
 
         protected Coroutine walkRoutine;
 
         public NavigationNode CurrentNode { get; set; }
-        public NavigationNode OccupiedNode;
+        public NavigationNode OccupiedNode { get; set; }
 
         public float Velocity { get { return velocity; } set { velocity = value; } }
         public bool Moving { get; set; }
@@ -95,16 +95,7 @@ namespace Sand.Navigation
 
                     if (path.Count > 0)
                     {
-                        if (grid.CanWalkThrough(path[0], this))
-                        {
-                            CurrentNode = path[0];
-                        }
-                        else
-                        {
-                            yield return new WaitForSeconds(timeBetweenPathUpdates);
-
-                            path = grid.GetPath(CurrentNode, path[path.Count - 1], this);
-                        }
+                      CurrentNode = path[0];
                     }
                 }
             }
