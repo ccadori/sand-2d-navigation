@@ -1,12 +1,12 @@
-## Sand 2D Navigation
+## Sand 2D Navigation
 
 Sand 2D Navigation is a simple and performatic grid navigation solution for 2D Unity games.
 
-## Install
+## Install
 
 As long as Sand 2D Navigation is a UPM, all you need to do is to add a package to your project with this repo URL (don't forget the .git extension).
 
-## Quick Setup
+## Quick Setup
 
 Follow the next steps to set up your grid navigation system
 
@@ -22,13 +22,13 @@ Now your setup is done and you can start using all the Sand Grid f
 
 In case you want to try a straightforward implementation of this system, consider taking a look at our [examples](#examples) :)
 
-## Examples
+## Examples
 
 - [Examples repository](https://github.com/ccadori/sand-2d-navigation-examples)
 
-## Documentation
+## Documentation
 
-#### Navigation Grid
+### Navigation Grid
 
 NavigationGrid is the main component that will control the other navigation components.
 
@@ -39,7 +39,7 @@ Inspector Properties:
 - Limit Agents Per Node: Turn on this property to limit the number of agents in the same target node.
 - Agents Per Node: The maximum number of agents in the same node (the above property should be enabled).
 
-#### Navigation Node
+### Navigation Node
 
 NavigationNode is the node/tile component, you must add it to every node you want the pathfinder to consider when calculating agents path.
 
@@ -49,7 +49,7 @@ Inspector Properties:
 - Move Cost: A cost number to be considered when pathfinder is calculating the agent path.
 - Walkable: Turn on this property to allow agents to walk over the node.
 
-#### Navigation Agent
+### Navigation Agent
 
 NavigationAgent is the agent component, it controls all the interactions with the grid. You must add it to every agent in the scene.
 
@@ -58,7 +58,7 @@ Inspector Properties:
 - Grid: A reference to the grid.
 - Velocity: The agent velocity when walking over the grid.
 
-## Roadmap
+## Roadmap
 
 - Create a low-level API, so the logic can be used independently of Unity components.
 - Add unit tests.
