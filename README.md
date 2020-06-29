@@ -13,7 +13,8 @@ Follow the next steps to set up your grid navigation system
 - Add the NavigationGrid component to a new GameObject.
 - Add the NavigationNode component to the tiles in your scene.
 - Add the NavigationAgent component to the agents in your scene.
-- Set the world size of your nods in the property "Node Size" in the NavigationGrid inspector.- Assign the NavigationGrid to the property "Grid" of your agents and nodes in the inspector.
+- Set the world size of your nods in the property "Node Size" in the NavigationGrid inspector
+- Assign the NavigationGrid to the property "Grid" of your agents and nodes in the inspector.
 - Set the property "Walkable" of your nodes in the inspector.
 - Set the property "Velocity" of your agent in the inspector.
 
