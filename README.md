@@ -18,7 +18,7 @@ Follow the next steps to set up your grid navigation system
 - Set the property "Walkable" of your nodes in the inspector.
 - Set the property "Velocity" of your agent in the inspector.
 
-Now your setup is done and you can start using all the Sand Grid features!
+Now your setup is done and you can start using all the Sand 2D Navigation features!
 
 Also, consider taking a look at our [examples repo](#examples) :)
 
