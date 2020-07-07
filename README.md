@@ -1,10 +1,13 @@
+[![openupm](https://img.shields.io/npm/v/com.ccadori.sand2dnavigation?label=openupm&registry_uri=https://package.openupm.com)](https://openupm.com/packages/com.ccadori.sand2dnavigation/)
+
 ## Sand 2D Navigation
 
 Sand 2D Navigation is a simple and performatic grid navigation solution for 2D Unity games.
 
 ## Install
 
-As long as Sand 2D Navigation is a UPM, all you need to do is to add a package to your project with this repo URL (don't forget the .git extension).
+There's two simple ways to install Sand 2D navigation, you can use the [OpenUPM](https://openupm.com/packages/com.ccadori.sand2dnavigation/) 
+or just add the repo git url in the Unity package window.
 
 ## Quick Setup
 
