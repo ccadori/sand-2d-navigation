@@ -28,9 +28,9 @@ namespace Sand.Navigation.Utils
             return nearest;
         }
 
-        static public List<NavigationNode> GetVertices(List<NavigationNode> path)
+        static public List<INode> GetVertices(List<INode> path)
         {
-            List<NavigationNode> vertices = new List<NavigationNode>();
+            List<INode> vertices = new List<INode>();
 
             for (int i = 0; i < path.Count; i++)
             {
@@ -59,11 +59,11 @@ namespace Sand.Navigation.Utils
             );
         }
         
-        static public List<NavigationNode> GetPath(NavigationNode start, NavigationNode target, NavigationAgent agent, NavigationGrid grid)
+        static public List<INode> GetPath(INode start, INode target, Api.ApiGrid grid)
         {
-            List<NavigationNode> openSet = new List<NavigationNode>();
-            HashSet<NavigationNode> closedSet = new HashSet<NavigationNode>();
-            NavigationNode currentNode;
+            List<INode> openSet = new List<INode>();
+            HashSet<INode> closedSet = new HashSet<INode>();
+            INode currentNode;
 
             openSet.Add(start);
 
@@ -89,7 +89,7 @@ namespace Sand.Navigation.Utils
                     return TracePath(start, target);
                 }
 
-                foreach (NavigationNode neighbor in grid.GetNeighbors(currentNode))
+                foreach (INode neighbor in grid.GetNeighbors(currentNode))
                 {
                     if (!neighbor.Walkable)
                         continue;
@@ -100,15 +100,12 @@ namespace Sand.Navigation.Utils
                     if (closedSet.Contains(neighbor))
                         continue;
 
-                    if (!grid.CanWalkThrough(neighbor, agent))
-                        continue;
-
-                    float costToNeighbour = currentNode.GCost + neighbor.MoveCost + Vector2.Distance(currentNode.transform.position, neighbor.transform.position);
+                    float costToNeighbour = currentNode.GCost + neighbor.MoveCost + Vector2.Distance(currentNode.WorldPosition, neighbor.WorldPosition);
 
                     if (costToNeighbour < neighbor.GCost || !openSet.Contains(neighbor))
                     {
                         neighbor.GCost = costToNeighbour;
-                        neighbor.HCost = Vector2.Distance(currentNode.transform.position, neighbor.transform.position);
+                        neighbor.HCost = Vector2.Distance(currentNode.WorldPosition, neighbor.WorldPosition);
                         neighbor.ParentNodeInPath = currentNode;
 
                         if (!openSet.Contains(neighbor))
@@ -120,10 +117,10 @@ namespace Sand.Navigation.Utils
             return null;
         }
         
-        static private List<NavigationNode> TracePath(NavigationNode start, NavigationNode target)
+        static private List<INode> TracePath(INode start, INode target)
         {
-            List<NavigationNode> path = new List<NavigationNode>();
-            NavigationNode currentNode = target;
+            List<INode> path = new List<INode>();
+            INode currentNode = target;
 
             while (currentNode != start)
             {

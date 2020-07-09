@@ -5,17 +5,15 @@ using UnityEngine;
 namespace Sand.Navigation
 
 {
-    public class NavigationAgent : MonoBehaviour
+    public class NavigationAgent : MonoBehaviour, IAgent
     {
         public NavigationGrid grid;
         public float velocity;
-        // public float timeBetweenPathUpdates;
-        // public int maxAttemptsToUpdatePath;
 
         protected Coroutine walkRoutine;
 
-        public NavigationNode CurrentNode { get; set; }
-        public NavigationNode OccupiedNode { get; set; }
+        public INode CurrentNode { get; set; }
+        public INode OccupiedNode { get; set; }
 
         public float Velocity { get { return velocity; } set { velocity = value; } }
         public bool Moving { get; set; }
@@ -39,7 +37,7 @@ namespace Sand.Navigation
             CurrentNode = null;
         }
 
-        public virtual void Teleport(NavigationNode node)
+        public virtual void Teleport(INode node)
         {
             if (!grid.CanOccupy(node, this))
             {
@@ -48,10 +46,10 @@ namespace Sand.Navigation
 
             OccupiedNode = node;
             CurrentNode = node;
-            transform.position = CurrentNode.transform.position;
+            transform.position = CurrentNode.WorldPosition;
         }
 
-        public virtual void MoveTo(NavigationNode target)
+        public virtual void MoveTo(INode target)
         {
             if (target == null || CurrentNode == null || target == CurrentNode)
                 return;
@@ -69,7 +67,7 @@ namespace Sand.Navigation
             MoveTo(grid.GetNode(position));
         }
 
-        protected virtual IEnumerator WalkRoutine(List<NavigationNode> path)
+        protected virtual IEnumerator WalkRoutine(List<INode> path)
         {
             Moving = true;
 
@@ -82,9 +80,9 @@ namespace Sand.Navigation
             {
                 yield return new WaitForFixedUpdate();
 
-                if (CurrentNode != null && (Vector2)transform.position != (Vector2)CurrentNode.transform.position)
+                if (CurrentNode != null && (Vector2)transform.position != (Vector2)CurrentNode.WorldPosition)
                 {
-                    transform.position = Vector2.MoveTowards(transform.position, CurrentNode.transform.position, (Velocity / 100));
+                    transform.position = Vector2.MoveTowards(transform.position, CurrentNode.WorldPosition, (Velocity / 100));
                 }
                 else
                 {
