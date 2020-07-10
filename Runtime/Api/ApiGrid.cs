@@ -22,7 +22,7 @@ namespace Sand.Navigation.Api
             AgentsPerNode = agentsPerNode;
             Agents = new List<IAgent>();
             Nodes = new Dictionary<Int2, INode>();
-            LastCacheUpdate = -Mathf.Infinity;
+            LastCacheUpdate = 0;
         }
 
         public List<INode> GetPath(INode start, INode target, IAgent agent)
@@ -103,11 +103,11 @@ namespace Sand.Navigation.Api
             }
 
             root.CachedNeighbors = neighbors;
-            root.LastNeighborUpdate = Time.deltaTime;
+
             return neighbors;
         }
 
-        internal bool CanOccupy(INode node, IAgent agent)
+        public bool CanOccupy(INode node, IAgent agent)
         {
             if (LimitAgentsPerNode)
             {
@@ -119,17 +119,12 @@ namespace Sand.Navigation.Api
 
         internal bool CanWalkThrough(INode node, IAgent agent)
         {
-            // if (limitAgentsWalkingPerNode)
-            // {
-            //     return GetAgentsWalkingOnNode(node, agent) < agentsWalkingPerNode;
-            // }
-
             return true;
         }
 
-        public void UpdateCache()
+        public void UpdateCache(float time)
         {
-            LastCacheUpdate = Time.deltaTime;
+            LastCacheUpdate = time;
         }
 
         public void AddNode(INode node)
@@ -147,8 +142,6 @@ namespace Sand.Navigation.Api
             {
                 Nodes.Add(node.Index, node);
             }
-
-            UpdateCache();
         }
 
         public void RemoveNode(INode node)
@@ -156,13 +149,11 @@ namespace Sand.Navigation.Api
             if (Nodes == null) Nodes = new Dictionary<Int2, INode>();
 
             Nodes.Remove(node.Index);
-
-            UpdateCache();
         }
 
         public void AddAgent(IAgent agent)
         {
-            if (Agents.Find((a) => agent == a) != null)
+            if (Agents.IndexOf(agent) != -1) 
                 return;
 
             Agents.Add(agent);

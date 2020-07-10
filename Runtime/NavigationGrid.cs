@@ -52,11 +52,13 @@ namespace Sand.Navigation
         public void AddNode(INode node)
         {
             Grid.AddNode(node);
+            Grid.UpdateCache(Time.deltaTime);
         }
 
         public void RemoveNode(INode node)
         {
             RemoveNode(node);
+            Grid.UpdateCache(Time.deltaTime);
         }
 
         public void AddAgent(IAgent agent) 
